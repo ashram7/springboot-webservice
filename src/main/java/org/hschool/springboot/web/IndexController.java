@@ -1,6 +1,8 @@
 package org.hschool.springboot.web;
 
 import lombok.RequiredArgsConstructor;
+import org.hschool.springboot.config.auth.LoginUser;
+import org.hschool.springboot.config.auth.dto.SessionUser;
 import org.hschool.springboot.service.PostsService;
 import org.hschool.springboot.web.dto.PostsResponseDto;
 import org.springframework.stereotype.Controller;
@@ -8,13 +10,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.servlet.http.HttpSession;
+
 @RequiredArgsConstructor
 @Controller
 public class IndexController {
     private final PostsService postsService;
+    private final HttpSession httpSession;
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(Model model, @LoginUser SessionUser user) { // 1)
         model.addAttribute("posts", postsService.findAllDesc());
+        // 2)
+        //SessionUser user = (SessionUser) httpSession.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("userName", user.getName());
+        }
         return "index";
     }
 
